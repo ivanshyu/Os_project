@@ -15,7 +15,7 @@ public class Bridge {
         bridgeSem = new Semaphore(max);   //one bridge resource, mutual exclusivity
         northWaiting = southWaiting = 0;
         exited = 0;
-        MaxHold=RemainHold=max;
+        MaxHold=max;
     }
 
     //Getters
@@ -33,45 +33,50 @@ public class Bridge {
         if (f.getID().startsWith("N")) northWaiting++;
         else southWaiting++;
         f.counted();
-        System.out.println(f.getID()+" is queued to cross");  //DEBUG 
+        System.out.println(f.getID()+" is queued to cross"+f.getLocation()+":"+getWaiting(f));   
     }
-    public synchronized void upExited() {
+    public synchronized int MutualWaiting(Farmer f){
+        if(f.getLocation()=="North") return southWaiting;
+        else return northWaiting;
+    }
+    public synchronized int getWaiting(Farmer f){
+        if(f.getLocation()=="North") return northWaiting;
+        else return southWaiting;
+    } 
+    /*  public synchronized void upExited() {
         exited++;
-   }
+        }*/
     public synchronized int getNorth() {
         return northWaiting;
     }
     public synchronized int getSouth() {
         return southWaiting;
     }
-    public synchronized int getExited() {
+    /*  public synchronized int getExited() {
         return exited;
-    }
+        }*/
     public synchronized String getCarWay(){
         return CarWay;
     }
     public synchronized void setCarWay(String way){
         CarWay=way;
     }
-    public synchronized void resetExited() {
+    /*  public synchronized void resetExited() {
         exited=0;
     }
-    public synchronized void BridgeHold(int value){
-        RemainHold+=value;
-    }
-
+    */
     public void cross(Farmer f) { 
         //Semaphore acquire
-        try {   
-            if( RemainHold==MaxHold || f.getLocation()==getCarWay()){
-                setCarWay(f.getLocation());
-                BridgeHold(-1);
-                bridgeSem.acquire();
-            }
-            System.out.println(f.getID()+": Crossing bridge Step 5.");
+       try {   
+            //different way,car on the bridge || same way,car on the bridge,no mutual car  
+            while((f.getLocation()!=getCarWay() && bridgeSem.availablePermits()!=MaxHold)||(f.getLocation()==getCarWay()&&bridgeSem.availablePermits()!=MaxHold&&MutualWaiting(f)!=0));
+            //setCarWay(f.getLocation());
+            bridgeSem.acquire();
+            setCarWay(f.getLocation());
+            System.out.println(f.getID()+": Crossing bridge Step 5. N:"+getNorth()+" S:"+ getSouth()+" Way: "+getCarWay()+" "+f.getLocation());
             System.out.println(f.getID()+": Crossing bridge Step 10.");
             System.out.println(f.getID()+": Crossing bridge Step 15.");
-          
+
             //Sleep for 200 units ,improves readability (else output is too fast) 
             try {
                 Thread.sleep(100);
@@ -83,14 +88,14 @@ public class Bridge {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {} //No interrupts implemented, so thread shouldn't be interrupted?
+            // }
         }
         catch (InterruptedException e) {} 
     }
 
     public void exit() {
         //Semaphore release
-        upExited();
-        BridgeHold(1);
+        //upExited();
         bridgeSem.release();
 
     }

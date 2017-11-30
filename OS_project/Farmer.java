@@ -2,7 +2,7 @@ package project;
 
 public class Farmer extends Thread{
     private String location;    //current location
-    private String destination; //Opposite location, destination, set in the constructor
+  //  private String destination; //Opposite location, destination, set in the constructor
     private String id;          //name      
     private Bridge bridge;      //bridge being used
     private boolean finished=false;
@@ -12,10 +12,10 @@ public class Farmer extends Thread{
     public Farmer(String id, String location, Bridge bridge) {
         this.id=id;
         this.location=location;
-        if (location=="North") destination="South"; //Island objects are not necessary for this particular implementation, as our options are merely North or South
-        else destination="North";
+     //   if (location=="North") destination="South"; //Island objects are not necessary for this particular implementation, as our options are merely North or South
+    //    else destination="North";
         this.bridge = bridge;
-        System.out.println(id+": Waiting for bridge. Going towards "+destination);  //print initial waiting for bridge
+        System.out.println(id+": Waiting for bridge.");  //print initial waiting for bridge
 
     }
 
@@ -47,14 +47,15 @@ public class Farmer extends Thread{
             //if ready to cross
 
             while (!finished) {
-                try {
+              /*  try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {}
-
+*/
                     bridge.upThis(this);    //increments the appropriate north/south counter in a thread safe method, also marks this thread as counted=true
+                    
                     bridge.cross(this);
                     bridge.exit();
-                    finished=true;
+                    setFinished(true);
             }
         }//end run  
 
