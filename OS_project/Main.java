@@ -10,32 +10,16 @@ import project.Farmer;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Question 2.");
-        //File reading
-        boolean success = false;    //looping file input
-        int N=0,S=0;
-        String[] input;
+        
+        System.out.println("Input North_cars, South_cars and Bridge_max");
+        int N=0,S=0,max;
+        
         Scanner in = new Scanner(System.in);
-        System.out.println("Enter file name eg input.txt: ");
-        while (!success) {  //loop until a valid file is given
-            try {
-                String f = in.nextLine();
-                Scanner file = new Scanner(new File(f));    //Throws file not found exception
-                try {
-                    //split by space
-                    input = file.nextLine().split("\\s+");
-                    //set number of north and south farmers
-                    N = Integer.parseInt(input[0].replaceAll("[^0-9]+",""));    
-                    S = Integer.parseInt(input[1].replaceAll("[^0-9]+",""));
-                    success = true; //no exception thrown, all went well, break loop
-                } catch (NoSuchElementException e) {System.out.println("File was empty or invalid! Please enter a valid file.");}
-                file.close();
-            } catch (FileNotFoundException e) { System.out.println("File not found! Please enter a valid file.");}
-        }
-        in.close();
-        //end file reading
+		N=in.nextInt();
+		S=in.nextInt();
+        max=in.nextInt();
 
-        Bridge bridge = new Bridge();   //create our bridge
+        Bridge bridge = new Bridge(max);   //create our bridge
         Farmer[] f = new Farmer[N+S];   //array of Farmers
         //create North farmers
         for (int i=0; i<N; i++) {

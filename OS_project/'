@@ -51,10 +51,32 @@ public class Farmer extends Thread{
                     Thread.sleep(100);
                 } catch (InterruptedException e) {}
 
+                if (bridge.getNorth() != 2 && bridge.getSouth() != 2 && !counted) { //if neither equal 2 yet and we havent added this to the list
                     bridge.upThis(this);    //increments the appropriate north/south counter in a thread safe method, also marks this thread as counted=true
+                }
+                if (counted && bridge.getNorth()==2 && id.startsWith("N")) {    //if this has been counted, and is a northern farmer and there are 2 northern farmers ready
                     bridge.cross(this);
                     bridge.exit();
                     finished=true;
+                    if (bridge.getExited()==2) {    //if both successfully crossed reset counts
+                        bridge.resetExited();
+                        bridge.resetNorth();
+                        System.out.println("Reset exited and North"); //DEBUG
+                        System.out.println("Exit: "+bridge.getExited()+", North: "+bridge.getNorth()+", South: "+bridge.getSouth()); //DEBUG
+                    }
+                }
+                else if (counted && bridge.getSouth()==2 && id.startsWith("S")) { //else if this has been counted, and is a southern farmer and there are 2 southern farmers ready
+                    bridge.cross(this);
+                    bridge.exit();
+                    finished=true;
+                    if (bridge.getExited()==2) {    //if both successfully crossed reset counts
+                        bridge.resetExited();
+                        bridge.resetSouth();
+                        System.out.println("Reset exited and South"); //DEBUG
+                        System.out.println("Exit: "+bridge.getExited()+", North: "+bridge.getNorth()+", South: "+bridge.getSouth()); //DEBUG
+                    }
+                }
+
             }
         }//end run  
 
