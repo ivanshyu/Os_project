@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.Collections;
 
 import project.Bridge;
 import project.Farmer;
@@ -29,11 +30,12 @@ public class Main {
         for (int i=N; i<S+N; i++) {
             f[i]= new Farmer("S_Farmer"+(i-N+1),"South",bridge);
         }
-
+        
         //start all farmers
         for (int i=0;i<S+N;i++) {
             f[i].start();   //start Farmer Threads. Farmers can run start, as Farmer extends thread
         }
+
     }
 
 }

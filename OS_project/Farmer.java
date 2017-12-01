@@ -52,9 +52,9 @@ public class Farmer extends Thread{
                 } catch (InterruptedException e) {}
 */
                     bridge.upThis(this);    //increments the appropriate north/south counter in a thread safe method, also marks this thread as counted=true
-                    
+                   // while(bridge.getUse()!=bridge.getMax() && getLocation()!=bridge.getCarWay() || (bridge.MutualWaiting(this)!=0 && getLocation()==bridge.getCarWay()));
                     bridge.cross(this);
-                    bridge.exit();
+                //    bridge.exit();
                     setFinished(true);
             }
         }//end run  
