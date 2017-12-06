@@ -1,6 +1,6 @@
 package project;
 import java.util.concurrent.Semaphore;
-
+import java.util.*;
 public class Bridge {
     private int crossed;    //Count the number of crossings
     private  int /*Semaphore*/ bridgeSem , direction; //semaphore to only allow 1 crossing at a time
@@ -9,6 +9,7 @@ public class Bridge {
     private String CarWay;
     private int MaxHold;
     private int RemainHold;
+    private Queue<String> q;
     //Constructor
     public Bridge(int max) {
         crossed=0;
@@ -17,6 +18,7 @@ public class Bridge {
         exited = 0;
         MaxHold=max;
         System.out.println(getUse()+" "+getMax());
+        q= new LinkedList<String>();
     }
 
     //Getters
@@ -34,10 +36,11 @@ public class Bridge {
         if (f.getLocation()=="North") northWaiting--;
         else southWaiting--; 
         crossed++;     
-        System.out.println(f.getID()+": Across the Bridge."); 
+        System.out.println(q.poll()+": Across the Bridge."); 
         System.out.println(" Crossed sum = "+getCrossed());    
+        //q.poll();
         bridgeSem+=1;
-        if(southWaiting==0||northWaiting==0)
+        if(getSouth()==0||getNorth()==0)
             notifyAll();
         else notify();
 
@@ -55,7 +58,7 @@ public class Bridge {
         if(f.getLocation()=="North") return southWaiting;
         else return northWaiting;
     }
-    public /*synchronized*/ int getWaiting(Farmer f){
+    public synchronized int getWaiting(Farmer f){
         if(f.getLocation()=="North") return northWaiting;
         else return southWaiting;
     } 
@@ -65,7 +68,7 @@ public class Bridge {
     public synchronized int getSouth() {
         return southWaiting;
     }
-    public /*synchronized*/ String getCarWay(){
+    public synchronized String getCarWay(){
         return CarWay;
     }
     public synchronized String setCarWay(Farmer f){ 
@@ -76,56 +79,69 @@ public class Bridge {
     }
     public boolean cross(Farmer f) { 
         upThis(f);
+        //go into mutex
         synchronized(this){
             //  try{
             int mutualWaiting;
-            if(f.getLocation()=="North") mutualWaiting=southWaiting;
-            else mutualWaiting=northWaiting;
-            while(f.getLocation()!=CarWay && mutualWaiting>=1 && MaxHold-bridgeSem>=1/*!=getMax()*/ ){
-                //Thread.yield();
+            if(f.getLocation()=="North") mutualWaiting=getSouth();
+            else mutualWaiting=getNorth();
+            //if waiting cars direction and cars on the bridge are different, waiting cars can't go. 
+            while(f.getLocation()!=CarWay && mutualWaiting>=1 && MaxHold-bridgeSem>=1){
                 try{
                     System.out.println(f.getID()+" stop because there are cars in different way");
                     wait();
                     return false;
                 }catch(InterruptedException e){}
             }
-            //  }catch(InterruptedException e){}
-            while(f.getLocation()==CarWay && MaxHold-bridgeSem>=1/*!=getMax()*/ && mutualWaiting>=1){
-                //Thread.yield();
+            //if waiting cars direction is equal to cars on the bridge,but it has mutual-wating cars,so it can't go.
+            while(f.getLocation()==CarWay && MaxHold-bridgeSem>=1 && mutualWaiting>=1){
                 try{
                     System.out.println(f.getID()+" stop although cars in same way, but there are mutual wating cars");
                     wait();
                     return false;
                 }catch(InterruptedException e){}
             }
-
             while(true){
+                //go  on the bridge 
                 if(bridgeSem>=1){
                     bridgeSem-=1;
+                    //f.setPriority(Thread.MAX_PRIORITY-getUse());
+                    q.offer(f.getID());
                     System.out.println(f.getID()+" go on bridge and "+"Now bridgeSem = "+bridgeSem);
                     break;
                 }
+                //if bridge is full of cars, it can't go.
                 else{
-                    //Thread.yield();
                     try{
-                        System.out.println(f.getID()+"stop becuase bridgeSem=0");
+                        System.out.println(f.getID()+" stop becuase bridgeSem=0");
                         wait();
                         return false;
                     }catch(InterruptedException e){}
 
-                }                }
+                }                
+            }
             System.out.println(f.getID()+" N:"+getNorth()+" S:"+ getSouth());
-            System.out.println(setCarWay(f)+" "+(/*getMax()-*getUse()*/MaxHold-bridgeSem)+" cars on bridge(including this car.");
+            System.out.println(setCarWay(f)+" "+(getUse())+" cars on bridge(including this car.");
         }
-
+        //help to debug and know the status.
         System.out.println(f.getID()+": Crossing bridge Step 5. N:"+getNorth()+" S:"+ getSouth()+" Way: "+getCarWay()+" "+f.getLocation());
         System.out.println(f.getID()+": Crossing bridge Step 10.");
         System.out.println(f.getID()+": Crossing bridge Step 15.");
 
         try {
-            Thread.sleep((long)(Math.random()*1000));
-        } catch (InterruptedException e) {} //No interrupts implemented, so thread shouldn't be interrupted?
-        upCross(f);  //increment NEON counter, synchronized to avoid print conflicts
+            //if(f.getCrossTime()>maxTime){
+            //    maxTime=f.getCrossTime();
+            //}
+            Thread.sleep(f.getCrossTime());
+        } catch (InterruptedException e) {}         
+        upCross(f);
+        synchronized(this){
+            if(f.getID()!=q.peek()){
+                try{
+                    wait();
+                }catch(InterruptedException e){}
+            }
+        }
         return true;
     }
 

@@ -2,22 +2,25 @@ package project;
 
 public class Farmer extends Thread{
     private String location;    //current location
-    //  private String destination; //Opposite location, destination, set in the constructor
     private String id;          //name      
     private Bridge bridge;      //bridge being used
     private int repeat=0;
     private boolean finished=false;
     private boolean counted = false;
+    private long crossTime;
 
     //constructor
     public Farmer(String id, String location, Bridge bridge) {
         this.id=id;
         this.location=location;
         this.bridge = bridge;
+        crossTime=(long)(Math.random()*1000);
         System.out.println(id+": Waiting for bridge.");  //print initial waiting for bridge
 
     }
-
+    public long getCrossTime(){
+        return crossTime;
+    }
     public int getRepeat(){
         return repeat;
     }
