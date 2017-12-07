@@ -1,9 +1,9 @@
 package project;
-import java.util.concurrent.Semaphore;
+//import java.util.concurrent.Semaphore;
 import java.util.*;
 public class Bridge {
     private int crossed;    //Count the number of crossings
-    private  int /*Semaphore*/ bridgeSem , direction; //semaphore to only allow 1 crossing at a time
+    private  int  bridgeSem , direction; //semaphore to only allow 1 crossing at a time
     private int northWaiting, southWaiting;
     private int exited;
     private String CarWay;
@@ -13,7 +13,7 @@ public class Bridge {
     //Constructor
     public Bridge(int max) {
         crossed=0;
-        bridgeSem = max /*new Semaphore(max)*/;   //one bridge resource, mutual exclusivity
+        bridgeSem = max ;   //one bridge resource, mutual exclusivity
         northWaiting = southWaiting = 0;
         exited = 0;
         MaxHold=max;
@@ -36,13 +36,13 @@ public class Bridge {
         if (f.getLocation()=="North") northWaiting--;
         else southWaiting--; 
         crossed++;     
-        System.out.println(q.poll()+": Across the Bridge."); 
+        System.out.println(q.poll()+" crossed the Bridge."); 
         System.out.println(" Crossed sum = "+getCrossed());    
         //q.poll();
         bridgeSem+=1;
-        if(getSouth()==0||getNorth()==0)
+        //if(getSouth()==0||getNorth()==0)
             notifyAll();
-        else notify();
+        //else notify();
 
     }
     public synchronized void upThis(Farmer f) {      //put into queue
@@ -81,7 +81,6 @@ public class Bridge {
         upThis(f);
         //go into mutex
         synchronized(this){
-            //  try{
             int mutualWaiting;
             if(f.getLocation()=="North") mutualWaiting=getSouth();
             else mutualWaiting=getNorth();
@@ -105,9 +104,8 @@ public class Bridge {
                 //go  on the bridge 
                 if(bridgeSem>=1){
                     bridgeSem-=1;
-                    //f.setPriority(Thread.MAX_PRIORITY-getUse());
                     q.offer(f.getID());
-                    System.out.println(f.getID()+" go on bridge and "+"Now bridgeSem = "+bridgeSem);
+                    System.out.println(f.getID()+" go on bridge and "+"Now the bridge still can afford "+bridgeSem);
                     break;
                 }
                 //if bridge is full of cars, it can't go.
@@ -120,28 +118,25 @@ public class Bridge {
 
                 }                
             }
-            System.out.println(f.getID()+" N:"+getNorth()+" S:"+ getSouth());
+            //System.out.println(f.getID()+" N:"+getNorth()+" S:"+ getSouth());
             System.out.println(setCarWay(f)+" "+(getUse())+" cars on bridge(including this car.");
         }
         //help to debug and know the status.
-        System.out.println(f.getID()+": Crossing bridge Step 5. N:"+getNorth()+" S:"+ getSouth()+" Way: "+getCarWay()+" "+f.getLocation());
-        System.out.println(f.getID()+": Crossing bridge Step 10.");
-        System.out.println(f.getID()+": Crossing bridge Step 15.");
+        System.out.println(f.getID()+" is crossing bridge.  Waiting cars  N:"+getNorth()+" S:"+ getSouth());
+        //System.out.println(f.getID()+": Crossing bridge Step 10.");
+        //System.out.println(f.getID()+": Crossing bridge Step 15.");
 
         try {
-            //if(f.getCrossTime()>maxTime){
-            //    maxTime=f.getCrossTime();
-            //}
             Thread.sleep(f.getCrossTime());
         } catch (InterruptedException e) {}         
-        upCross(f);
         synchronized(this){
-            if(f.getID()!=q.peek()){
+            while(f.getID()!=q.peek()){
                 try{
                     wait();
                 }catch(InterruptedException e){}
             }
         }
+        upCross(f);
         return true;
     }
 
