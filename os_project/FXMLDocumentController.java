@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package os_project;
 
 import java.net.URL;
@@ -22,18 +17,29 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import javafx.scene.layout.AnchorPane;
+
+
 
 public class FXMLDocumentController implements Initializable {
     
     @FXML
-    private ImageView imageview;
-    private Image image;
-    
+    //private ImageView imageview;
+    private AnchorPane anchorpane;
+
     @FXML
-    private void handleButtonAction(ActionEvent event) {
-        
+    public void Action1(ActionEvent event) {
+        /*
         Image image = new Image(OS_Project.class.getResourceAsStream("west_car.jpg"));
         imageview.setImage(image);        
+        */
+        ImageView imageview = new ImageView();
+        imageview.setX(39);
+        imageview.setY(135);
+        Image image = new Image(OS_Project.class.getResourceAsStream("west_car.jpg"));
+        imageview.setImage(image);
+        
+        anchorpane.getChildren().add(imageview);
         
         Timeline timeline = new Timeline();
 
@@ -51,7 +57,6 @@ public class FXMLDocumentController implements Initializable {
             new KeyValue(imageview.translateYProperty(), 0))
         );
         timeline.play();
-    
     }
     
     @Override

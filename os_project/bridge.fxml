@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="os_project.FXMLDocumentController">
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="os_project.FXMLDocumentController">
    <children>
       <Line endX="242.0" layoutX="227.0" layoutY="287.0" />
       <Line endX="242.0" layoutX="227.0" layoutY="211.0" />
@@ -16,8 +16,6 @@
       <Line endX="50.0" endY="-30.0" layoutX="470.0" layoutY="211.0" />
       <Line endX="50.0" endY="-30.0" layoutX="176.0" layoutY="318.0" />
       <Line endX="50.0" endY="30.0" layoutX="176.0" layoutY="181.0" />
-      <Button fx:id="button" layoutX="148.0" layoutY="47.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Start" />
-      <ImageView fx:id="imageview" fitHeight="62.0" fitWidth="84.0" layoutX="37.0" layoutY="134.0" pickOnBounds="true" preserveRatio="true">
-        </ImageView>
+      <Button fx:id="button1" layoutX="51.0" layoutY="36.0" mnemonicParsing="false" onAction="#Action1" text="Start" />
    </children>
 </AnchorPane>
