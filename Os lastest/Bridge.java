@@ -33,8 +33,6 @@ public class Bridge {
         return MaxHold;
     }
     public synchronized void upCross(Farmer f){    //statistic the crossed sum
-        if (f.getLocation()=="North") northWaiting--;
-        else southWaiting--; 
         crossed++;     
         System.out.println(q.poll()+" crossed the Bridge."); 
         System.out.println(" Crossed sum = "+getCrossed());    
@@ -85,7 +83,7 @@ public class Bridge {
             if(f.getLocation()=="North") mutualWaiting=getSouth();
             else mutualWaiting=getNorth();
             //if waiting cars direction and cars on the bridge are different, waiting cars can't go. 
-            while(f.getLocation()!=CarWay && mutualWaiting>=1 && MaxHold-bridgeSem>=1){
+            while(f.getLocation()!=CarWay /*&& mutualWaiting>=1*/ && MaxHold-bridgeSem>=1){
                 try{
                     System.out.println(f.getID()+" stop because there are cars in different way");
                     wait();
@@ -106,6 +104,9 @@ public class Bridge {
                     bridgeSem-=1;
                     q.offer(f.getID());
                     System.out.println(f.getID()+" go on bridge and "+"Now the bridge still can afford "+bridgeSem);
+                    if (f.getLocation()=="North") northWaiting--;
+                    else southWaiting--; 
+         
                     break;
                 }
                 //if bridge is full of cars, it can't go.
